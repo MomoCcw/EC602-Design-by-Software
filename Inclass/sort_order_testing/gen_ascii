@@ -1,0 +1,4 @@
+#!/Users/francischen/opt/anaconda3/bin/python
+# chr: convert number to character 
+for i in range(256):
+	print(i,repr(chr(i)))

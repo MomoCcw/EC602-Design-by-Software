@@ -1,0 +1,165 @@
+#!/Users/francischen/opt/anaconda3/bin/python
+#Sep.27th Chuwei Chen
+
+#1. check how many arguments 
+#2. lsfiles just like ls
+#3. lsfiles gives you more optionsx
+#4. astty() to check if theres a terminal or not.
+
+import sys
+print(sys.argv) # print out all the system arguments input
+
+#---------------#
+
+"""
+Functions:
+	- serve a single well defined purpose.
+	- printing vs. non-printing
+
+"""
+
+def Myfunction():
+	pass
+
+# printable & non-printable
+def double(y):
+	print(2*y)
+	return(2*y)
+
+y=double(34)
+print(y)
+
+# arguments can be named in the calling program like this:
+# keyword:
+z1 = double(y=12)
+#positional:
+z2=double(12)
+print(z1,z2)
+
+def multiple_arguments(x,y,z):
+	#breakpoint()
+	return x + y + z
+
+total = multiple_arguments(4,5,6)
+print(f"the total is {total}")
+print(sum((4,5,6)))
+
+total = multiple_arguments(z=7,x=12,y=-9)
+print(total)
+# Class
+
+# what are these arguments supposed to be?
+# what deos this return? --> The thing after '->', it doesn't check it, just
+# for reader to understand better.
+# Python doesn't check the type yet!!!
+# (see the bool types, there're wrong but still works) 
+# These are just hints for reader.
+def make_box(fill:str,edge:str,width:float,height:bool,thickness:bool) -> str:
+	full_edge = edge*width
+	top_box = ''
+	for lines in range(thickness):
+	    top_box += full_edge + "\n"
+
+	mid_box = ""
+	for lines in range(height-2*thickness):
+	    line = edge*thickness + \
+	    					fill*(width-2*thickness) + edge*thickness
+	    mid_box += line+"\n"
+
+	the_box = top_box + mid_box + top_box
+	return the_box
+
+# Positional arguments?
+# - what deos this mean?
+# - poor communication with author
+# - correctness?
+try:
+	mybox = make_box(12,2,3,'e','f')
+except:
+	print('this did not work')
+
+myboy = make_box(width=10,height=6,thickness=2,fill=':D',edge=':>')
+print(myboy)
+
+try:
+	mybox = make_box('f','e',12,width=8,thickness=1)
+	print(mybox)
+except:
+	print('no named argument after un-named argument')
+
+# 					positional only
+def make_box(fill:str,edge:str,/,width:float,*,height:bool,thickness:bool) -> str:
+	full_edge = edge*width
+	top_box = ''
+	for lines in range(thickness):
+	    top_box += full_edge + "\n"
+
+	mid_box = ""
+	for lines in range(height-2*thickness):
+	    line = edge*thickness + \
+	    					fill*(width-2*thickness) + edge*thickness
+	    mid_box += line+"\n"
+
+	the_box = top_box + mid_box + top_box
+	return the_box
+
+mybox = make_box('f','e',thickness=1, height=8,width=20)
+print(mybox)
+
+def f(pos1,pos2,/,pos_or_kwd,*,kwd1,kwd2) -> str:
+	print(pos1,pos2)
+	print(pos_or_kwd)
+	print(kwd1,kwd2)
+
+# positional only: cos(x)
+# default: positional or keyword
+# keyword only: where using position would be confusing
+
+def cos(x,/):
+	print('x is position only', x,'\n')
+
+try:
+	cos(1)
+except:
+	print('not allowed\n')
+
+f(5,6,12,kwd1='one',kwd2='two')
+print()
+
+# Complex Numbers:
+# Complex is a new type of object
+
+#Simplest possible new type
+# class Complex():
+	
+# 	pass # for a new function block, put pass in it 
+# 		 #if not yet knowing what to put in it
+class Complex():
+	"this is a new type"
+	def _init_(self):
+		print("in init")
+		self.x=0
+		self.y=0
+		pass
+
+	def f(self):
+		print(self.x,self.y)
+
+print('making c')
+c = Complex()
+print('making b')
+b = Complex()
+print(b,c)
+
+mylist = list()
+
+b.real = 12
+b.imag = 24
+print(b.real + b.imag)
+
+
+	
+#b = Complex(3,4)
+c = complex(real=3,imag=4)
+print(c)
+

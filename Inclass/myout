@@ -1,0 +1,7 @@
+**
+CompletedProcess(args=['ls'], returncode=0, stdout=b'Untitled.ipynb\nlec.py\nlec2.py\nmyout\n')
+b'Untitled.ipynb\nlec.py\nlec2.py\nmyout\n'
+hello
+world
+again
+what is it?ok .txt 65536
