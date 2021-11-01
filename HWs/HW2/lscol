@@ -1,0 +1,124 @@
+#!/usr/bin/env python
+# Copyright 2021 Chuwei Chen chenchuw@bu.edu
+
+
+import os
+import math
+import re
+import string
+
+path = '.'
+size=os.get_terminal_size()
+files=os.listdir(path)
+(colsize,rowsize)=size
+fill=len(files)
+
+strip_files =[]
+for i in files:
+    strip_files.append(i.strip("!#$%&'()*+,-./:;<=>?@[]^_`{|}~"))
+
+symbol=[]
+digit=[]
+letter_digit=[]
+
+for i in files:
+    if re.match(r'^[0-9]',i):
+        digit.append(i)
+    elif (re.match(r'^[\W,_]',i)):
+        symbol.append(i)
+    else:
+        letter_digit.append(i)
+
+for j in symbol:
+    if re.match(r'^[\w]',j.strip("!#$%&'()*+,-./:;<=>?@[]^_`{|}~")):
+        letter_digit.append(j)
+        symbol.remove(j)
+for j in symbol:
+    if re.match(r'^[\w]',j.strip("!#$%&'()*+,-./:;<=>?@[]^_`{|}~")):
+        letter_digit.append(j)
+        symbol.remove(j)
+for j in symbol:
+    if re.match(r'^[\w]',j.strip("!#$%&'()*+,-./:;<=>?@[]^_`{|}~")):
+        letter_digit.append(j)
+        symbol.remove(j)
+for j in symbol:
+    if re.match(r'^[\w]',j.strip("!#$%&'()*+,-./:;<=>?@[]^_`{|}~")):
+        letter_digit.append(j)
+        symbol.remove(j)
+
+def first_ascii(elem):
+    if elem == '$':
+        return 256
+    return ord(elem[0])
+
+def complex(elem):
+    strip_elem = elem.strip("!#$%&'()*+,-./:;<=>?@[]^_`{|}~")
+
+    return ord(strip_elem[0])
+
+# sorted_letter_digit = sorted(letter_digit, key = str.swapcase)
+sorted_symbol = sorted(symbol, key = first_ascii)
+sorted_digit = sorted(digit, key = first_ascii)
+sorted_letter_digit = sorted(letter_digit, key = complex)
+
+
+final_list = sorted_symbol + sorted_digit + sorted_letter_digit
+
+i = 0
+j = 0
+k = 0
+wid=[]
+wid1=[]
+wid2=[]
+
+while i < fill:
+    col = math.ceil(fill/(i+1))
+    while j <= col:
+        while k <= i:
+            ind = (i+1)*j+k
+            if ind <= fill-1:
+                wid.append(len(final_list[ind]))
+            k += 1
+        wid1.append(max(wid)+2)
+        wid = []
+        j += 1
+        k = 0
+        if ind >= fill-1:
+            wid2.append(sum(wid1))
+            col_wid=wid1
+            break
+    j = 0
+    i += 1
+    wid1 = []
+    if min(wid2) <= colsize:
+        o_lin=i
+        o_col=math.ceil(fill/o_lin)
+        break
+i=0
+j=0
+prow = 1
+r_lcol=fill-((o_col-1)*o_lin)
+n=0
+while j < len(col_wid):
+    while n < fill:
+        final_list[n]=final_list[n].ljust(col_wid[j],' ')
+        n+=1
+        if n % o_lin == 0:
+            j+=1
+    j+=1  
+i=0
+j=0
+k=0
+pr=[]
+while k < o_lin:
+    pr.append([])
+    for i in range(o_col):
+        if j < len(final_list):
+            pr[k].append(final_list[j])
+            if j < fill:
+                j += o_lin
+                if j == fill:
+                    break
+    print(''.join(pr[k]))
+    k+=1
+    j=k

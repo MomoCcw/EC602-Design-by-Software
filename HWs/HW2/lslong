@@ -1,0 +1,234 @@
+#!/home/ece/miniconda3/bin/python
+# -*- coding: utf-8 -*-
+# Copyright 2021 ZHAOZHONGQI zqi5@bu.edu
+# Copyright 2021 Chuwei Chen chenchuw@bu.edu
+
+import stat
+import os
+import re
+import time
+from pwd import getpwuid
+from grp import getgrgid
+import json
+
+class lslong:
+
+    #   List information about the FILEs (the current directory by default).  Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.
+    #   Mandatory arguments to long options are mandatory for short options too.
+
+    #   ls -l     : use a long listing format
+
+    def __init__(self):
+        pass
+
+
+    def get_Time(self,file):
+        t = time.strftime("%b %d %H:%M", time.gmtime(os.path.getmtime(file)))
+        return str(t)
+
+    def get_Size(self,file):
+        size = os.path.getsize(file)
+        # fsize = size/float(1024*1024)
+        # fsize = int(fsize)
+        return str(size)
+
+    def sort_ls(self,list_Of_Directory):
+
+        fileOfDigitsLetter = []
+        fileOfSymbols = []
+        fileStartWithLetter = []
+        fileStartWithDigits = []
+
+        special_symbl = '';
+        for i in range(len(list_Of_Directory)):
+            fileName = list_Of_Directory[i]
+
+            # Start with Letter of Number:
+            if re.match(r'^[A-Za-z0-9]', fileName):
+                fileOfDigitsLetter.append(fileName)
+                
+            else:
+            # Start with Symbol:
+                if re.search(r'[A-Za-z0-9]+', fileName):
+                    fileOfDigitsLetter.append(fileName)
+                else:
+                    fileOfSymbols.append(fileName)
+                    # in "ls - Linux Command Line": "$", dollar sign is treated as specail case, priority = letters < symbols 
+                    if re.match(r'^[$]', fileName):
+                        
+                        fileOfSymbols.remove(fileName)
+                        special_symbl = fileName
+
+                    # remove hidden files(etc, ".xxx") without show up if it existed in directory
+                    if re.match(r'^[.]', fileName):
+                        
+                        fileOfSymbols.remove(fileName)
+                        
+
+        for i in fileOfDigitsLetter:
+
+            if re.match(r'^[0-9]', i):
+                fileOfDigitsLetter.remove(i)
+                fileStartWithDigits.append(i)
+
+            elif re.match(r'^[A-Za-z]', i):
+                fileOfDigitsLetter.remove(i)
+                fileStartWithLetter.append(i)
+        
+        fileOfSymbols.sort()
+        if(special_symbl != ''):
+            fileOfSymbols.append(special_symbl)
+            # fileStartWithLetter.remove(special_symbl)
+
+        fileStartWithLetter.sort()
+       
+        fileStartWithDigits.sort()
+        
+        fileOfDigitsLetter.sort()
+
+        newfile = fileOfSymbols + fileStartWithDigits + fileStartWithLetter + fileOfDigitsLetter
+
+        return newfile
+
+    def sort_2(self, files):
+
+        symbol=[]
+        digit=[]
+        letter_digit=[]
+        for i in files:
+            if re.match(r'^[0-9]',i):
+                digit.append(i)
+            elif (re.match(r'^[\W,_]',i)):
+                symbol.append(i)
+            else:
+                letter_digit.append(i)
+
+        for j in symbol:
+            if re.match(r'^[\w]',j.strip("!#$%&'()*+,-./:;<=>?@[]^_`{|}~")):
+                letter_digit.append(j)
+                symbol.remove(j)
+        for j in symbol:
+            if re.match(r'^[\w]',j.strip("!#$%&'()*+,-./:;<=>?@[]^_`{|}~")):
+                letter_digit.append(j)
+                symbol.remove(j)
+        for j in symbol:
+            if re.match(r'^[\w]',j.strip("!#$%&'()*+,-./:;<=>?@[]^_`{|}~")):
+                letter_digit.append(j)
+                symbol.remove(j)
+        for j in symbol:
+            if re.match(r'^[\w]',j.strip("!#$%&'()*+,-./:;<=>?@[]^_`{|}~")):
+                letter_digit.append(j)
+                symbol.remove(j)
+
+        def first_ascii(elem):
+            if elem == '$':
+                return 256
+            return ord(elem[0])
+
+        def complex(elem):
+            strip_elem = elem.strip("!#$%&'()*+,-./:;<=>?@[]^_`{|}~")
+
+            return ord(strip_elem[0])
+
+        # sorted_letter_digit = sorted(letter_digit, key = str.swapcase)
+        sorted_symbol = sorted(symbol, key = first_ascii)
+        sorted_digit = sorted(digit, key = first_ascii)
+        sorted_letter_digit = sorted(letter_digit, key = complex)
+
+        final_list = sorted_symbol + sorted_digit + sorted_letter_digit
+
+        return final_list
+
+    def check_authority(self,file):
+
+        permissions_code = "" 
+        filepath = str(os.path.abspath(file))
+        permission_type = ["-", "l", "d"]
+        
+        if os.path.isfile(filepath):
+            permissions = permission_type[0]
+        elif os.path.islink(filepath):
+            permissions = permission_type[1]
+        elif os.path.isdir(filepath):
+            permissions = permission_type[2]
+        else:
+            permissions = permission_type[0]
+
+        permissions_code = str(oct(os.lstat(filepath).st_mode)[-3:])
+
+        for x in permissions_code:
+            if x == '7':
+                permissions = permissions + "rwx"
+            elif x == '6':
+                permissions = permissions + "rw-"
+            elif x == '5':
+                permissions = permissions + "r-x"
+            elif x == '4':
+                permissions = permissions + "r--"
+            elif x == '3':
+                permissions = permissions + "-wx"
+            elif x == '2':
+                permissions = permissions + "-w-"
+            elif x == '1':
+                permissions = permissions + "--x"
+            else:
+                permissions = permissions + "---"
+
+        return permissions
+
+        
+    def get_Hard_links(self, file):
+        # Get the hard_links of the the current file
+        hard_link = str(os.lstat(os.path.abspath(file)).st_nlink)
+        return hard_link
+
+
+    def get_Owner(self,file):
+        # Through pwd, get the owner name of the current file
+        owner = str(getpwuid(os.lstat(os.path.abspath(file)).st_uid).pw_name)
+        return owner
+
+    def get_Groups(self,file):
+        # Through os group, get the group name of the current file
+        groups = str(getgrgid(os.lstat(os.path.abspath(file)).st_gid).gr_name)
+        return groups
+
+    def ls_long(self):
+        ls_l = lslong()
+
+        list_dir = os.listdir()
+        newfile = ls_l.sort_2(list_dir)
+        block = 0
+        length = 0
+        for i in newfile:
+            block = block + os.lstat(os.path.abspath(i)).st_blocks/2
+            current_lengh = len(ls_l.get_Size(i))
+            if length < current_lengh:
+                length = current_lengh
+
+        print('total ' + str(int(block)))
+
+        for i in newfile:
+            # print(ls_l.get_Size(i) + " " + ls_l.get_Time(i) + " " + i)
+            print(ls_l.check_authority(i) + " " + 
+                    ls_l.get_Hard_links(i) + " " + 
+                    ls_l.get_Owner(i) + " " + 
+                    ls_l.get_Groups(i) + " " + 
+                    ls_l.get_Size(i).rjust(length) + " " + 
+                    ls_l.get_Time(i) + " " + i)
+
+            # print(time.gmtime(os.path.getmtime(i)))
+            
+            # 输出最近修改时间
+            # print(os.path.getatime(i) )   # 输出最近访问时间
+            # print(os.path.getctime(i) )   # 输出文件创建时间
+            # print( time.gmtime(os.path.getmtime(i)) )  # 以struct_time形式输出最近修改时间
+            # print( os.path.getsize(i) )   # 输出文件大小（字节为单位）
+            # print( os.path.abspath(i) )   # 输出绝对路径
+            # print( os.path.normpath(file) )  # 规范path字符串形式
+            # print(i)
+
+
+if __name__ == '__main__':
+    window = lslong()
+    window.ls_long()
