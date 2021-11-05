@@ -52,6 +52,7 @@ should be raised by the function.
 
 """
 
+# ANSWER starts ===========================================
 
 def decoder(ciphertext : str, key : str) -> str:
   if len(key) != 1:
@@ -101,7 +102,7 @@ def decoder(ciphertext : str, key : str) -> str:
   return ans
 
 
-
+# END of ANSWER ==================================
 
 
 cipher_plain_examples = {('abcde', 'z'): ('zyxwv', 'z'), ('abcde', 'c'): ('zyxxw', 'c'), ('this is plaintext', 'i'): ('gsri sj mqbtpjyfj', 'i'), ('This Is Plaintext', 'i'): ('Gsri Sj Mqbtpjyfj', 'i'), ('This Is Plaintext', 'I'): ('Gsri Sj Mqbtpjyfj', 'I'), ('I am sending 100 dollars, right now.', 'n'): ('R zn hvmxsnv 100 ynqqbkj, ktvui oog.', 'n'), ('This is a poem.\nAbout nothing,\nat all', ','): ('Gsrh rh z klvn.\nZylfg mlgsrmt,\nah app', ','), ('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'a'): ('zabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg', 'a'), (None, 'bad key'): ('gsrh urmzo vcznkov droo izrhv zm vcxvkgrlm', 'bad key')}

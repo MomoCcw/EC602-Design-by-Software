@@ -26,7 +26,6 @@ def decoder(ciphertext : str, key : str) -> str:
   offset = 0
   for i in range(len(plain_buffer)):
     if plain_buffer[i] == key.lower() or plain_buffer[i] == key.upper():
-        print(plain_buffer[i])
         offset += 1 # OFFSET SHOULD BE DETERMINED AGAIN IN THE LOOP
         j = i+1
         for j in range(j,len(plain_buffer)):
