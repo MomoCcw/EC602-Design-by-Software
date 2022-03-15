@@ -1,0 +1,17 @@
+modify tests
+modify [1, 'b', 'two', 1, 'c']
+modify ['two', 8, 12, 'two', 12, 42]
+
+basegroup tests
+['3', '4', '21', '7'] {7: ['7', '21']}
+['100', '4', '5'] {4: ['100', '4']}
+['6', '7', '21'] {7: ['7', '21']}
+
+Circle/Point tests
+testing [P(4,6), P(5,8), P(4,8), P(6.1,8), P(0,0)] with Circle(4,6,radius=2.1)
+P(4,6) is inside of Circle(4,6,radius=2.1)
+P(5,8) is outside of Circle(4,6,radius=2.1)
+P(4,8) is inside of Circle(4,6,radius=2.1)
+P(6.1,8) is outside of Circle(4,6,radius=2.1)
+P(0,0) is outside of Circle(4,6,radius=2.1)
+[Circle(4,6,radius=2.1)]
